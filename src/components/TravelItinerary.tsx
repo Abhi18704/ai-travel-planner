@@ -1,0 +1,141 @@
+
+import React from 'react';
+import { format, parseISO } from 'date-fns';
+import { TravelPlan } from '@/services/geminiService';
+import { cn } from '@/lib/utils';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { Clock, DollarSign, MapPin, LightbulbIcon, DownloadIcon } from 'lucide-react';
+
+interface TravelItineraryProps {
+  travelPlan: TravelPlan;
+  onReset: () => void;
+}
+
+const TravelItinerary: React.FC<TravelItineraryProps> = ({ travelPlan, onReset }) => {
+  if (!travelPlan || !travelPlan.days || travelPlan.days.length === 0) {
+    return null;
+  }
+
+  const formatDate = (dateString: string) => {
+    try {
+      return format(parseISO(dateString), 'EEEE, MMMM d, yyyy');
+    } catch (error) {
+      return dateString;
+    }
+  };
+
+  const handleDownloadPDF = () => {
+    alert("PDF download feature would be implemented here.");
+    // In a real app, we would generate a PDF using a library like jsPDF
+  };
+
+  return (
+    <div className="space-y-6 max-w-4xl mx-auto">
+      <div className="flex justify-between items-center">
+        <h2 className="text-3xl font-bold text-travel-dark">Your Travel Itinerary</h2>
+        <div className="flex gap-3">
+          <Button 
+            variant="outline" 
+            className="flex items-center gap-2"
+            onClick={handleDownloadPDF}
+          >
+            <DownloadIcon className="h-4 w-4" />
+            Export PDF
+          </Button>
+          <Button 
+            variant="ghost" 
+            onClick={onReset}
+          >
+            Create New Plan
+          </Button>
+        </div>
+      </div>
+      
+      <Card className="border-travel-primary/20 bg-gradient-to-br from-travel-light to-white">
+        <CardHeader>
+          <CardTitle className="text-travel-primary text-xl">Trip Summary</CardTitle>
+          <CardDescription>{travelPlan.summary}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="text-right font-medium">
+            Estimated Total: <span className="text-travel-primary">{travelPlan.totalEstimatedCost}</span>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="space-y-6">
+        {travelPlan.days.map((day) => (
+          <Card key={day.day} className="travel-card">
+            <CardHeader className="bg-gradient-to-r from-travel-primary to-travel-primary/80 text-white">
+              <CardTitle className="text-xl flex justify-between">
+                <span>Day {day.day}</span>
+                <span>{formatDate(day.date)}</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="space-y-6">
+                {day.activities.map((activity, index) => (
+                  <div key={index} className={cn(
+                    "relative pl-6 pr-2 py-3 rounded-lg",
+                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                  )}>
+                    <div className="before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-travel-secondary before:rounded-full before:content-['']">
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="font-medium flex items-center gap-2">
+                          <Clock className="h-4 w-4 text-travel-secondary" />
+                          {activity.time}
+                        </h4>
+                        {activity.cost && (
+                          <span className="text-sm text-gray-600 flex items-center gap-1">
+                            <DollarSign className="h-4 w-4" />
+                            {activity.cost}
+                          </span>
+                        )}
+                      </div>
+                      
+                      <p className="text-gray-700 mb-2">{activity.description}</p>
+                      
+                      {activity.location && (
+                        <div className="flex items-center gap-1 text-sm text-gray-500">
+                          <MapPin className="h-3 w-3" />
+                          {activity.location}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl flex items-center gap-2">
+            <LightbulbIcon className="h-5 w-5 text-travel-secondary" />
+            Travel Tips
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-2">
+            {travelPlan.tips.map((tip, index) => (
+              <li key={index} className="flex gap-2">
+                <span className="text-travel-primary font-medium">{index + 1}.</span>
+                <span>{tip}</span>
+              </li>
+            ))}
+          </ul>
+        </CardContent>
+      </Card>
+
+      <div className="text-center text-sm text-gray-500 pt-4">
+        <p>Generated using Gemini AI • Travel Planner by Lovable</p>
+      </div>
+    </div>
+  );
+};
+
+export default TravelItinerary;
