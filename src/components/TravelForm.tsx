@@ -207,7 +207,7 @@ const TravelForm: React.FC<TravelFormProps> = ({ onSubmit, loading }) => {
           <Input
             id="budget"
             name="budget"
-            placeholder="e.g., $2000"
+            placeholder="e.g., ₹2000"
             value={formData.budget}
             onChange={handleChange}
             required
