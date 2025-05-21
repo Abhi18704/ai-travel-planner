@@ -13,6 +13,7 @@ type GeminiRequestParams = {
 
 export type TravelPlan = {
   summary: string;
+  destination?: string; // Add destination property
   days: {
     day: number;
     date: string;
@@ -73,6 +74,12 @@ export const generateTravelPlan = async (
     
     // Process the response to extract the travel plan
     const travelPlan = processTravelPlanResponse(data);
+    
+    // Ensure destination is set in the travel plan
+    if (!travelPlan.destination && params.destination) {
+      travelPlan.destination = params.destination;
+    }
+    
     return travelPlan;
   } catch (error) {
     console.error("Error generating travel plan:", error);
@@ -138,7 +145,20 @@ const processTravelPlanResponse = (response: any): TravelPlan => {
     const jsonString = textContent.substring(jsonStart, jsonEnd);
     
     // Parse the JSON
-    return JSON.parse(jsonString);
+    const parsedPlan = JSON.parse(jsonString);
+    
+    // Ensure the plan has a destination property
+    if (!parsedPlan.destination) {
+      // Try to extract destination from other data
+      if (parsedPlan.summary && parsedPlan.summary.includes("to")) {
+        const parts = parsedPlan.summary.split("to");
+        if (parts.length > 1) {
+          parsedPlan.destination = parts[1].trim().split(" ")[0];
+        }
+      }
+    }
+    
+    return parsedPlan;
   } catch (error) {
     console.error("Error processing response:", error);
     // Return fallback data structure if parsing fails
@@ -146,7 +166,8 @@ const processTravelPlanResponse = (response: any): TravelPlan => {
       summary: "Failed to generate travel plan. Please try again.",
       days: [],
       tips: ["Please check your input and try again."],
-      totalEstimatedCost: "Unknown"
+      totalEstimatedCost: "Unknown",
+      destination: "Unknown"
     };
   }
 };

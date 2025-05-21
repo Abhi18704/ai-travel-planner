@@ -26,6 +26,11 @@ const TravelItinerary: React.FC<TravelItineraryProps> = ({ travelPlan, onReset, 
     return null;
   }
 
+  // Get a safe destination name for the PDF file
+  const getDestination = () => {
+    return travelPlan.destination || 'Your_Trip';
+  };
+
   const formatDate = (dateString: string) => {
     try {
       return format(parseISO(dateString), 'EEEE, MMMM d, yyyy');
@@ -72,7 +77,7 @@ const TravelItinerary: React.FC<TravelItineraryProps> = ({ travelPlan, onReset, 
         heightLeft -= pageHeight;
       }
       
-      pdf.save(`Travel_Plan_${travelPlan.destination}.pdf`);
+      pdf.save(`Travel_Plan_${getDestination()}.pdf`);
       toast.success("PDF downloaded successfully!");
     } catch (error) {
       console.error('Error generating PDF:', error);
