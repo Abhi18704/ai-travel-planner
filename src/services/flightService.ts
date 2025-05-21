@@ -24,7 +24,7 @@ const generateFlightNumber = (airline: string) => {
 // Generate random price within a range
 const generatePrice = (min: number, max: number) => {
   const price = Math.floor(min + Math.random() * (max - min));
-  return `$${price}`;
+  return `₹${price}`;
 };
 
 // Calculate flight duration

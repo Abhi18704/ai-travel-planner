@@ -235,7 +235,7 @@ const TravelItinerary: React.FC<TravelItineraryProps> = ({ travelPlan, onReset, 
       </div>
 
       <div className="text-center text-sm text-gray-500 pt-4">
-        <p>Generated using Gemini AI • Travel Planner by Lovable</p>
+        <p>Generated using Gemini AI • Travel Planner</p>
       </div>
     </div>
   );
