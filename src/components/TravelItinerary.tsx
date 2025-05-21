@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Clock, DollarSign, MapPin, LightbulbIcon, DownloadIcon, MessageCircle } from 'lucide-react';
+import { Clock, DollarSign, MapPin, LightbulbIcon, DownloadIcon, MessageCircle, IndianRupee } from 'lucide-react';
 import TravelChat from './TravelChat';
 import FlightDetailsCard from './FlightDetailsCard';
 import { getAvailableFlights } from '@/services/flightService';
@@ -162,7 +162,7 @@ const TravelItinerary: React.FC<TravelItineraryProps> = ({ travelPlan, onReset, 
           </CardHeader>
           <CardContent>
             <div className="text-right font-medium">
-              Estimated Total: <span className="text-travel-primary">{travelPlan.totalEstimatedCost}</span>
+              Estimated Total: ₹ <span className="text-travel-primary">{travelPlan.totalEstimatedCost}</span>
             </div>
           </CardContent>
         </Card>
@@ -191,7 +191,7 @@ const TravelItinerary: React.FC<TravelItineraryProps> = ({ travelPlan, onReset, 
                           </h4>
                           {activity.cost && (
                             <span className="text-sm text-gray-600 flex items-center gap-1">
-                              <DollarSign className="h-4 w-4" />
+                              <IndianRupee className="h-4 w-4" />
                               {activity.cost}
                             </span>
                           )}
