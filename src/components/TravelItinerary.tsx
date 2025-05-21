@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { format, parseISO } from 'date-fns';
 import { TravelPlan } from '@/services/geminiService';
 import { cn } from '@/lib/utils';
@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Clock, DollarSign, MapPin, LightbulbIcon, DownloadIcon, MessageCircle } from 'lucide-react';
 import TravelChat from './TravelChat';
+import FlightDetailsCard from './FlightDetailsCard';
+import { getAvailableFlights } from '@/services/flightService';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { toast } from '@/components/ui/sonner';
@@ -20,7 +22,23 @@ interface TravelItineraryProps {
 
 const TravelItinerary: React.FC<TravelItineraryProps> = ({ travelPlan, onReset, apiKey }) => {
   const [showChat, setShowChat] = useState(false);
+  const [flights, setFlights] = useState([]);
   const itineraryRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    // Get flights when the travel plan loads
+    if (travelPlan && travelPlan.days && travelPlan.days.length > 0) {
+      const departureDate = travelPlan.days[0].date;
+      const returnDate = travelPlan.days[travelPlan.days.length - 1].date;
+      const mockFlights = getAvailableFlights(
+        "Your Location", // We don't know the actual origin
+        travelPlan.destination || "Your Destination",
+        departureDate,
+        6
+      );
+      setFlights(mockFlights);
+    }
+  }, [travelPlan]);
   
   if (!travelPlan || !travelPlan.days || travelPlan.days.length === 0) {
     return null;
@@ -126,6 +144,15 @@ const TravelItinerary: React.FC<TravelItineraryProps> = ({ travelPlan, onReset, 
           <TravelChat apiKey={apiKey} travelPlan={travelPlan} />
         </div>
       )}
+
+      {/* Flight Details Card */}
+      <FlightDetailsCard 
+        origin="Your Location" 
+        destination={getDestination()}
+        departureDate={travelPlan.days[0].date}
+        returnDate={travelPlan.days[travelPlan.days.length - 1].date}
+        flights={flights}
+      />
       
       <div ref={itineraryRef}>
         <Card className="border-travel-primary/20 bg-gradient-to-br from-travel-light to-white">
