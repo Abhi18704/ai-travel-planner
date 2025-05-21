@@ -6,7 +6,7 @@ import LoadingItinerary from '@/components/LoadingItinerary';
 import ErrorDisplay from '@/components/ErrorDisplay';
 import { generateTravelPlan, TravelPlan } from '@/services/geminiService';
 import { Compass, Plane, MapPinned, Globe, Briefcase, Users } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 
 const Index = () => {
@@ -237,7 +237,11 @@ const Index = () => {
       {error && <ErrorDisplay message={error} onRetry={handleRetry} />}
 
       {travelPlan && !loading && !error && (
-        <TravelItinerary travelPlan={travelPlan} onReset={handleReset} />
+        <TravelItinerary 
+          travelPlan={travelPlan} 
+          onReset={handleReset} 
+          apiKey={formData?.apiKey}
+        />
       )}
     </div>
   );

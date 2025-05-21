@@ -1,19 +1,23 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { format, parseISO } from 'date-fns';
 import { TravelPlan } from '@/services/geminiService';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Clock, DollarSign, MapPin, LightbulbIcon, DownloadIcon } from 'lucide-react';
+import { Clock, DollarSign, MapPin, LightbulbIcon, DownloadIcon, MessageCircle } from 'lucide-react';
+import TravelChat from './TravelChat';
 
 interface TravelItineraryProps {
   travelPlan: TravelPlan;
   onReset: () => void;
+  apiKey?: string;
 }
 
-const TravelItinerary: React.FC<TravelItineraryProps> = ({ travelPlan, onReset }) => {
+const TravelItinerary: React.FC<TravelItineraryProps> = ({ travelPlan, onReset, apiKey }) => {
+  const [showChat, setShowChat] = useState(false);
+  
   if (!travelPlan || !travelPlan.days || travelPlan.days.length === 0) {
     return null;
   }
@@ -31,6 +35,10 @@ const TravelItinerary: React.FC<TravelItineraryProps> = ({ travelPlan, onReset }
     // In a real app, we would generate a PDF using a library like jsPDF
   };
 
+  const toggleChat = () => {
+    setShowChat(!showChat);
+  };
+
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       <div className="flex justify-between items-center">
@@ -44,6 +52,16 @@ const TravelItinerary: React.FC<TravelItineraryProps> = ({ travelPlan, onReset }
             <DownloadIcon className="h-4 w-4" />
             Export PDF
           </Button>
+          {apiKey && (
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2"
+              onClick={toggleChat}
+            >
+              <MessageCircle className="h-4 w-4" />
+              {showChat ? 'Hide Chat' : 'Ask Questions'}
+            </Button>
+          )}
           <Button 
             variant="ghost" 
             onClick={onReset}
@@ -52,6 +70,12 @@ const TravelItinerary: React.FC<TravelItineraryProps> = ({ travelPlan, onReset }
           </Button>
         </div>
       </div>
+      
+      {showChat && apiKey && (
+        <div className="mb-6">
+          <TravelChat apiKey={apiKey} travelPlan={travelPlan} />
+        </div>
+      )}
       
       <Card className="border-travel-primary/20 bg-gradient-to-br from-travel-light to-white">
         <CardHeader>
