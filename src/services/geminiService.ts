@@ -1,5 +1,6 @@
 
 // Gemini AI API Service
+import { GEMINI_API_KEY } from '@/config/env';
 
 type GeminiRequestParams = {
   source: string;
@@ -13,7 +14,7 @@ type GeminiRequestParams = {
 
 export type TravelPlan = {
   summary: string;
-  destination?: string; // Add destination property
+  destination?: string;
   days: {
     day: number;
     date: string;
@@ -28,13 +29,15 @@ export type TravelPlan = {
   totalEstimatedCost: string;
 };
 
-// This is where we would normally use an API key from environment variables
-// For this demo, we'll need the user to provide their own API key
+// This function will use the API key from environment variables or from the user input
 export const generateTravelPlan = async (
   params: GeminiRequestParams, 
-  apiKey: string
+  userProvidedApiKey: string
 ): Promise<TravelPlan> => {
   try {
+    // Use environment API key or user-provided key
+    const apiKey = GEMINI_API_KEY || userProvidedApiKey;
+    
     if (!apiKey) {
       throw new Error("API key is required");
     }

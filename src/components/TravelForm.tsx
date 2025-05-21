@@ -8,6 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { cn } from '@/lib/utils';
 import { CalendarIcon, PlusCircle, X } from 'lucide-react';
 import { format, addDays } from 'date-fns';
+import { GEMINI_API_KEY, hasApiKey } from '@/config/env';
 
 interface TravelFormProps {
   onSubmit: (formData: TravelFormData) => void;
@@ -34,7 +35,7 @@ const TravelForm: React.FC<TravelFormProps> = ({ onSubmit, loading }) => {
     budget: '',
     travelers: '1',
     interests: [],
-    apiKey: ''
+    apiKey: GEMINI_API_KEY
   });
   const [newInterest, setNewInterest] = useState('');
   const [startDateOpen, setStartDateOpen] = useState(false);
@@ -265,26 +266,28 @@ const TravelForm: React.FC<TravelFormProps> = ({ onSubmit, loading }) => {
         )}
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="apiKey">
-          Gemini API Key 
-          <span className="text-xs text-muted-foreground ml-2">
-            (Get from <a href="https://ai.google.dev/" target="_blank" rel="noopener noreferrer" className="underline">Google AI Studio</a>)
-          </span>
-        </Label>
-        <Input
-          id="apiKey"
-          name="apiKey"
-          type="password"
-          placeholder="Enter your Gemini API Key"
-          value={formData.apiKey}
-          onChange={handleChange}
-          required
-        />
-        <p className="text-xs text-muted-foreground">
-          Your API key is only used for this request and not stored.
-        </p>
-      </div>
+      {!hasApiKey() && (
+        <div className="space-y-2">
+          <Label htmlFor="apiKey">
+            Gemini API Key 
+            <span className="text-xs text-muted-foreground ml-2">
+              (Get from <a href="https://ai.google.dev/" target="_blank" rel="noopener noreferrer" className="underline">Google AI Studio</a>)
+            </span>
+          </Label>
+          <Input
+            id="apiKey"
+            name="apiKey"
+            type="password"
+            placeholder="Enter your Gemini API Key"
+            value={formData.apiKey}
+            onChange={handleChange}
+            required
+          />
+          <p className="text-xs text-muted-foreground">
+            Your API key is only used for this request and not stored.
+          </p>
+        </div>
+      )}
 
       <Button type="submit" className="w-full bg-travel-primary hover:bg-travel-primary/90" disabled={loading}>
         {loading ? 'Generating Itinerary...' : 'Create Travel Plan'}

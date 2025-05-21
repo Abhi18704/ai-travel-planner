@@ -7,6 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { MessageCircle, Send, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { TravelPlan } from '@/services/geminiService';
+import { GEMINI_API_KEY } from '@/config/env';
 
 interface Message {
   id: string;
@@ -16,7 +17,7 @@ interface Message {
 }
 
 interface TravelChatProps {
-  apiKey: string;
+  apiKey?: string;
   travelPlan: TravelPlan;
 }
 
@@ -84,6 +85,13 @@ const TravelChat: React.FC<TravelChatProps> = ({ apiKey, travelPlan }) => {
 
   const askGemini = async (question: string): Promise<string> => {
     try {
+      // Use environment API key or user-provided key
+      const activeApiKey = GEMINI_API_KEY || apiKey;
+      
+      if (!activeApiKey) {
+        throw new Error("API key is required");
+      }
+      
       // Format the trip summary for context
       const tripContext = `
 Destination: ${travelPlan.days[0]?.activities?.[0]?.location?.split(',').pop()?.trim() || 'the destination'}
@@ -91,7 +99,7 @@ Trip duration: ${travelPlan.days.length} days
 Budget: ${travelPlan.totalEstimatedCost}
 `;
 
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${activeApiKey}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
